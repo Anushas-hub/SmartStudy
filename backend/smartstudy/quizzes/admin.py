@@ -1,16 +1,43 @@
 from django.contrib import admin
-from .models import Quiz, Question, Choice, QuizAttempt
+from .models import Quiz, Question, QuizAttempt
 
 
-class ChoiceInline(admin.TabularInline):
-    model = Choice
-    extra = 4
+class QuestionInline(admin.TabularInline):
+    model = Question
+    extra = 1
 
 
-class QuestionAdmin(admin.ModelAdmin):
-    inlines = [ChoiceInline]
+@admin.register(Quiz)
+class QuizAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "topic",
+        "created_by",
+        "is_published",
+        "created_at",
+    )
+
+    list_filter = ("is_published", "topic")
+    search_fields = ("title",)
+
+    inlines = [QuestionInline]
+
+    readonly_fields = ("created_by",)
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
 
-admin.site.register(Quiz)
-admin.site.register(Question, QuestionAdmin)
-admin.site.register(QuizAttempt)
+@admin.register(QuizAttempt)
+class QuizAttemptAdmin(admin.ModelAdmin):
+    list_display = (
+        "quiz",
+        "student",
+        "score",
+        "total_marks",
+        "attempted_at",
+    )
+
+    list_filter = ("quiz",)

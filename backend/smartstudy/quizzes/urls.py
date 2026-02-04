@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import QuizDetailAPIView, SubmitQuizAPIView
+from .views import QuizCreateAPIView, PublicQuizListAPIView
 
 urlpatterns = [
-    path("<int:quiz_id>/", QuizDetailAPIView.as_view()),
-    path("<int:quiz_id>/submit/", SubmitQuizAPIView.as_view()),
+    path("create/", QuizCreateAPIView.as_view()),
+    path("public/", PublicQuizListAPIView.as_view()),
 ]
