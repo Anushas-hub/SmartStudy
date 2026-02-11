@@ -1,7 +1,20 @@
 from rest_framework import serializers
-from .models import PreviousYearQuestion
+from .models import PYQ
+from attempts.models import PYQAttempt
 
-class PreviousYearQuestionSerializer(serializers.ModelSerializer):
+
+class PYQListSerializer(serializers.ModelSerializer):
+    is_attempted = serializers.SerializerMethodField()
+
     class Meta:
-        model = PreviousYearQuestion
-        fields = "__all__"
+        model = PYQ
+        fields = ["id", "title", "subject", "year", "is_attempted"]
+
+    def get_is_attempted(self, obj):
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return PYQAttempt.objects.filter(
+                user=request.user,
+                pyq=obj
+            ).exists()
+        return False

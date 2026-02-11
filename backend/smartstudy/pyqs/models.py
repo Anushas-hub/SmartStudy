@@ -1,6 +1,7 @@
 from django.db import models
 
-class PreviousYearQuestion(models.Model):
+
+class PYQ(models.Model):
     title = models.CharField(max_length=255)
     subject = models.CharField(max_length=100)
     year = models.IntegerField()
