@@ -31,4 +31,5 @@ urlpatterns = [
     path("api/quizzes/", include("quizzes.urls")),
     path("api/pyqs/", include("pyqs.urls")),
     path("api/attempts/", include("attempts.urls")),
+    path("api/feedback/", include("feedback.urls")),
 ]
