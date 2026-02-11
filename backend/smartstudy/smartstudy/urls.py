@@ -29,4 +29,6 @@ urlpatterns = [
     path("api/topics/", include("topics.urls")),
     path("api/users/", include("users.urls")),
     path("api/quizzes/", include("quizzes.urls")),
+    path("api/pyqs/", include("pyqs.urls")),
+    path("api/attempts/", include("attempts.urls")),
 ]
