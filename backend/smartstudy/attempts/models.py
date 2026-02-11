@@ -1,22 +1,22 @@
 from django.db import models
-from django.conf import settings
+from django.contrib.auth.models import User
 from pyqs.models import PYQ
 
 
 class PYQAttempt(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        User,
+        on_delete=models.CASCADE,
+        related_name="pyq_attempts"
     )
+
     pyq = models.ForeignKey(
         PYQ,
         on_delete=models.CASCADE,
         related_name="attempts"
     )
-    attempted_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ("user", "pyq")
+    attempted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user} attempted {self.pyq}"
