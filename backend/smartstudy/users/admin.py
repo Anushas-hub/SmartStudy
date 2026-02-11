@@ -4,7 +4,7 @@ from .models import Profile
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "role", "created_at")
+    list_display = ("user", "role", "credits", "created_at")
     list_filter = ("role",)
     search_fields = ("user__username",)
 

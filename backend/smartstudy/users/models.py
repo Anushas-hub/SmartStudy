@@ -19,7 +19,8 @@ class Profile(models.Model):
         choices=ROLE_CHOICES,
         default="STUDENT"
     )
+    credits = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} ({self.role})"
+        return f"{self.user.username} ({self.role}) - {self.credits} credits"

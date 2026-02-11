@@ -11,6 +11,11 @@ class PYQAttemptCreateView(CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+        # ADD CREDITS
+        profile = self.request.user.profile
+        profile.credits += 5
+        profile.save()
+
 
 class MyAttemptsListView(ListAPIView):
     serializer_class = PYQAttemptSerializer
