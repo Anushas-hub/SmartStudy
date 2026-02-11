@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
 
-    'users',
+    'users.apps.UsersConfig',
     'materials',
     'quizzes',
     'feedback',

@@ -1,11 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 
-from .serializers import SignupSerializer
+from .serializers import SignupSerializer, UserMeSerializer
 
 
 class SignupAPIView(APIView):
@@ -40,15 +39,16 @@ class LoginAPIView(APIView):
 
 
 class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         logout(request)
         return Response({"message": "Logged out"})
-    
-class MyCreditsAPIView(APIView):
+
+
+class MeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response({
-            "username": request.user.username,
-            "credits": request.user.profile.credits
-        })
+        serializer = UserMeSerializer(request.user)
+        return Response(serializer.data)
