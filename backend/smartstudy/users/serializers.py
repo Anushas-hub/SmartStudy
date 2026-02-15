@@ -4,9 +4,6 @@ from .models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    level = serializers.ReadOnlyField()
-    badge = serializers.ReadOnlyField()
-
     class Meta:
         model = Profile
         fields = ["role", "credits", "level", "badge"]
@@ -20,7 +17,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "password", "email", "role"]
+        fields = ["username", "email", "password", "role"]
         extra_kwargs = {
             "password": {"write_only": True}
         }
@@ -34,8 +31,8 @@ class SignupSerializer(serializers.ModelSerializer):
 
 
 class UserMeSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer()
+    profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = User
-        fields = ["username", "email", "profile"]
+        fields = ["id", "username", "email", "profile"]
