@@ -1,35 +1,40 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import "../App.css";
 
 function Dashboard() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await API.get("users/me/");
-        setUser(response.data);
-      } catch (error) {
-        console.log("Not authenticated");
-      }
-    };
-
-    fetchProfile();
+    API.get("users/me/")
+      .then((res) => setUser(res.data))
+      .catch(() => {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      });
   }, []);
 
-  if (!user) {
-    return <h3>Loading...</h3>;
-  }
+  if (!user) return <h2 style={{ color: "white" }}>Loading...</h2>;
 
   return (
-    <div>
-      <h2>Dashboard</h2>
+    <div className="card">
+      <h1>Welcome, {user.username} 👋</h1>
 
-      <h3>Welcome, {user.username}</h3>
+      <div className="info">
+        <p><strong>Credits:</strong> {user.profile.credits}</p>
+        <p><strong>Level:</strong> {user.profile.level}</p>
+        <p><strong>Badge:</strong> {user.profile.badge}</p>
+      </div>
 
-      <p>Credits: {user.profile.credits}</p>
-      <p>Level: {user.profile.level}</p>
-      <p>Badge: {user.profile.badge}</p>
+      <button
+        className="logout"
+        onClick={() => {
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 }

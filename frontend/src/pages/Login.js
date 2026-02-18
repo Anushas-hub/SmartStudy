@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "../App.css";
 
 function Login() {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -18,23 +18,20 @@ function Login() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await API.post("users/login/", formData);
-
-    localStorage.setItem("token", response.data.token);
-
-    alert("Login successful");
-    navigate("/dashboard");
-  } catch (error) {
-    alert("Invalid credentials");
-  }
-};
-
+    e.preventDefault();
+    try {
+      const response = await API.post("users/login/", formData);
+      localStorage.setItem("token", response.data.token);
+      navigate("/dashboard");
+    } catch {
+      alert("Invalid credentials");
+    }
+  };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className="card">
+      <h1>SmartStudy</h1>
+      <p className="subtitle">Learn. Grow. Achieve.</p>
 
       <form onSubmit={handleSubmit}>
         <input
@@ -44,7 +41,6 @@ function Login() {
           onChange={handleChange}
           required
         />
-        <br /><br />
 
         <input
           type="password"
@@ -53,7 +49,6 @@ function Login() {
           onChange={handleChange}
           required
         />
-        <br /><br />
 
         <button type="submit">Login</button>
       </form>
