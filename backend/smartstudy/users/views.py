@@ -1,54 +1,43 @@
-from django.contrib.auth import authenticate, login, logout
-from rest_framework.views import APIView
+from django.contrib.auth import authenticate
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
-
-from .serializers import SignupSerializer, UserMeSerializer
-
-
-class SignupAPIView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = SignupSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "User created successfully"},
-                status=status.HTTP_201_CREATED
-            )
-        return Response(serializer.errors, status=400)
+from rest_framework.authtoken.models import Token
 
 
-class LoginAPIView(APIView):
-    permission_classes = [AllowAny]
+@api_view(['POST'])
+def login_user(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
 
-    def post(self, request):
-        user = authenticate(
-            username=request.data.get("username"),
-            password=request.data.get("password"),
-        )
-        if user:
-            login(request, user)
-            return Response({"message": "Login successful"})
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            "token": token.key,
+            "username": user.username
+        })
+    else:
         return Response(
             {"error": "Invalid credentials"},
-            status=status.HTTP_401_UNAUTHORIZED
+            status=status.HTTP_400_BAD_REQUEST
         )
 
 
-class LogoutAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        logout(request)
-        return Response({"message": "Logged out"})
-
-
-class MeAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        serializer = UserMeSerializer(request.user)
-        return Response(serializer.data)
+@api_view(['GET'])
+def current_user(request):
+    if request.user.is_authenticated:
+        return Response({
+            "username": request.user.username,
+            "profile": {
+                "credits": request.user.profile.credits,
+                "level": request.user.profile.level,
+                "badge": request.user.profile.badge,
+            }
+        })
+    else:
+        return Response(
+            {"error": "Not authenticated"},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
