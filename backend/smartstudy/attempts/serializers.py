@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from .models import PYQAttempt
+from .models import QuizAttempt
 
 
-class PYQAttemptSerializer(serializers.ModelSerializer):
+class QuizAttemptSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PYQAttempt
-        fields = "__all__"
+        model = QuizAttempt
+        fields = '__all__'
+        read_only_fields = ('user', 'score', 'status', 'started_at', 'completed_at')

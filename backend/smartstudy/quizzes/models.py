@@ -1,43 +1,58 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-from topics.models import Topic
 
-User = get_user_model()
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 
 class Quiz(models.Model):
-    topic = models.ForeignKey(
-        Topic,
-        on_delete=models.CASCADE,
-        related_name="quizzes"
+    DIFFICULTY_CHOICES = (
+        ('easy', 'Easy'),
+        ('medium', 'Medium'),
+        ('hard', 'Hard'),
     )
 
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
 
-    created_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="created_quizzes"
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='quizzes'
     )
 
-    # admin + author both can create, but publish control stays here
+    difficulty = models.CharField(
+        max_length=10,
+        choices=DIFFICULTY_CHOICES,
+        default='easy'
+    )
+
     is_published = models.BooleanField(default=False)
+    time_limit = models.IntegerField(default=10)  # minutes
+    negative_marking = models.FloatField(default=0.0)
 
     created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
 
     def __str__(self):
         return self.title
 
 
 class Question(models.Model):
+    OPTION_CHOICES = (
+        ('A', 'Option A'),
+        ('B', 'Option B'),
+        ('C', 'Option C'),
+        ('D', 'Option D'),
+    )
+
     quiz = models.ForeignKey(
         Quiz,
         on_delete=models.CASCADE,
-        related_name="questions"
+        related_name='questions'
     )
 
     question_text = models.TextField()
@@ -47,44 +62,7 @@ class Question(models.Model):
     option_c = models.CharField(max_length=255)
     option_d = models.CharField(max_length=255)
 
-    # 🔥 FIXED: default added so migration loop never happens again
-    correct_option = models.CharField(
-        max_length=1,
-        choices=(
-            ("A", "A"),
-            ("B", "B"),
-            ("C", "C"),
-            ("D", "D"),
-        ),
-        default="A",
-    )
-
-    marks = models.PositiveIntegerField(default=1)
+    correct_answer = models.CharField(max_length=1, choices=OPTION_CHOICES)
 
     def __str__(self):
-        return f"{self.quiz.title} - {self.question_text[:40]}"
-
-
-class QuizAttempt(models.Model):
-    quiz = models.ForeignKey(
-        Quiz,
-        on_delete=models.CASCADE,
-        related_name="attempts"
-    )
-
-    student = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="quiz_attempts"
-    )
-
-    score = models.PositiveIntegerField(default=0)
-    total_marks = models.PositiveIntegerField(default=0)
-
-    attempted_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-attempted_at"]
-
-    def __str__(self):
-        return f"{self.student} - {self.quiz}"
+        return f"{self.quiz.title} - {self.question_text[:50]}"

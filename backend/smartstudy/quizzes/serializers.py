@@ -2,16 +2,39 @@ from rest_framework import serializers
 from .models import Quiz, Question
 
 
+class PublicQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = [
+            "id",
+            "question_text",
+            "option_a",
+            "option_b",
+            "option_c",
+            "option_d",
+        ]
+
+
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        exclude = ("correct_option",)
+        fields = "__all__"
 
 
 class QuizSerializer(serializers.ModelSerializer):
-    questions = QuestionSerializer(many=True, read_only=True)
+    created_by = serializers.ReadOnlyField(source="created_by.username")
+    questions = PublicQuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Quiz
-        fields = "__all__"
-        read_only_fields = ("created_by",)
+        fields = [
+            "id",
+            "title",
+            "description",
+            "created_by",
+            "is_published",
+            "created_at",
+            "updated_at",
+            "questions",
+        ]
+        read_only_fields = ["is_published", "created_by"]

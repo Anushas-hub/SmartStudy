@@ -1,6 +1,4 @@
 from django.contrib import admin
-from .models import PYQAttempt
+from .models import QuizAttempt
 
-@admin.register(PYQAttempt)
-class PYQAttemptAdmin(admin.ModelAdmin):
-    list_display = ("user", "pyq", "attempted_at")
+admin.site.register(QuizAttempt)

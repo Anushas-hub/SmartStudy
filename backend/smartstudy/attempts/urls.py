@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import PYQAttemptCreateView, MyAttemptsListView
+from .views import start_or_resume_quiz, submit_quiz
 
 urlpatterns = [
-    path("attempt/", PYQAttemptCreateView.as_view()),
-    path("my-attempts/", MyAttemptsListView.as_view()),
+    path("start/<int:quiz_id>/", start_or_resume_quiz),
+    path("submit/<int:quiz_id>/", submit_quiz),
 ]

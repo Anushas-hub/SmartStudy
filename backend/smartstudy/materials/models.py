@@ -1,56 +1,41 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-from topics.models import Topic
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+import os
 
-User = get_user_model()
+
+def validate_file_extension(value):
+    ext = os.path.splitext(value.name)[1]
+    valid_extensions = ['.pdf', '.doc', '.docx', '.ppt', '.pptx']
+    if ext.lower() not in valid_extensions:
+        raise ValidationError('Unsupported file type.')
 
 
 class StudyMaterial(models.Model):
-    # 🔗 Link to Topic (safe unlink if topic deleted)
-    topic = models.ForeignKey(
-        Topic,
-        on_delete=models.SET_NULL,
-        related_name="materials",
-        null=True,
-        blank=True,
-    )
-
-    subject = models.CharField(
-        max_length=100,
-        null=True,
-        blank=True,
-    )
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    ]
 
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-
-    # 📄 Only files (PDF restriction handled elsewhere)
-    file = models.FileField(upload_to="materials/")
-
+    file = models.FileField(
+        upload_to="materials/",
+        validators=[validate_file_extension]
+    )
     uploaded_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="uploaded_materials",
+        related_name="materials"
     )
-
-    STATUS_CHOICES = (
-        ("PENDING", "Pending"),
-        ("APPROVED", "Approved"),
-        ("REJECTED", "Rejected"),
-    )
-
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default="PENDING",
+        default='PENDING'
     )
-
     rejection_reason = models.TextField(blank=True, null=True)
-
     uploaded_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-uploaded_at"]
 
     def __str__(self):
         return self.title

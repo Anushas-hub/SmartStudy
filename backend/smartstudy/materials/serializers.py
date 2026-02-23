@@ -3,15 +3,18 @@ from .models import StudyMaterial
 
 
 class StudyMaterialSerializer(serializers.ModelSerializer):
-    topic_name = serializers.CharField(source="topic.name", read_only=True)
+    uploaded_by = serializers.ReadOnlyField(source="uploaded_by.username")
 
     class Meta:
         model = StudyMaterial
         fields = [
             "id",
             "title",
-            "topic",
-            "topic_name",
+            "description",
             "file",
+            "uploaded_by",
+            "status",
+            "rejection_reason",
             "uploaded_at",
         ]
+        read_only_fields = ["status", "uploaded_by", "uploaded_at"]
