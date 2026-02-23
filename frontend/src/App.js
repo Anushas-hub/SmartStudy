@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Materials from "./pages/Materials";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -25,7 +26,14 @@ function App() {
             </PrivateRoute>
           }
         />
-
+        <Route
+          path="/materials"
+          element={
+            <PrivateRoute>
+              <Materials />
+            </PrivateRoute>
+          }
+        />          
       </Routes>
     </Router>
   );

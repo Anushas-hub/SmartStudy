@@ -35,6 +35,12 @@ function Dashboard() {
       >
         Logout
       </button>
+      <button
+      onClick={() => (window.location.href = "/materials")}
+>
+     View Study Materials
+    </button>
+
     </div>
   );
 }
